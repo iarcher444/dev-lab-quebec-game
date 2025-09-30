@@ -1,0 +1,19 @@
+{
+  "name": "game-backlog-cis486",
+  "version": "1.0.0",
+  "description": "Game Backlog app for CIS 486 Dev Lab QUEBEC (Express + MongoDB, dotenv).",
+  "type": "module",
+  "main": "app.mjs",
+  "scripts": {
+    "start": "node app.mjs",
+    "dev": "nodemon app.mjs"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongodb": "^6.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
