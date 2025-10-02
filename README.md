@@ -1,4 +1,4 @@
-<ins>Game Backlog Mini App</ins>
+<h1>Game Backlog Mini App</h1>
 
 <br>As a video game enjoyer </br>
 <br>I want to demonstrate a full stack data video game backlog app</br>
