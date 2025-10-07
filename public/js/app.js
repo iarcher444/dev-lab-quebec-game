@@ -33,12 +33,12 @@ document.getElementById('addGameForm').addEventListener('submit', async (e) => {
 
   const game = {
     title: document.getElementById('gameTitle').value.trim(),
-    platform: document.getElementById('console').value.trim(), // "console" input → platform field
+    platform: document.getElementById('platform').value.trim(),
     status: document.getElementById('status').value.trim()
   };
 
   if (!game.title || !game.platform) {
-    showMessage('Please provide a Game Title and Console.', 'warning');
+    showMessage('Please provide a Game Title and Platform.', 'warning');
     return;
   }
 
