@@ -52,8 +52,14 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="status" class="form-label">Status</label>
-                                <input type="text" class="form-control" id="status">
+                                <select class="form-select" id="status">
+                                <option value="Backlog">Playing</option>
+                                <option value="Playing">Completed</option>
+                                <option value="Completed">Abandoned</option>
+                                <option value="Abandoned">Backlog</option>
+                                </select>
                             </div>
+
                             <div class="col-md-2 d-flex align-items-end">
                                 <button type="submit" class="btn btn-success w-100">
                                     <i class="bi bi-plus-circle"> Add Game </i>
