@@ -9,7 +9,7 @@ body {
         }
 
         .bg-primary {
-            background-color: #8FDEF6 !important;
+            background-color: #FAB4E5 !important;
         }
 
         .editable-field {
@@ -29,7 +29,7 @@ body {
 
         .editing {
             background-color: #fff3cd !important;
-            border-color: #8FDEF6 !important;
+            border-color: #FAB4E5 !important;
         }
 
         .game-card {
@@ -38,7 +38,7 @@ body {
 
         .game-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px #8FDEF6;
+            box-shadow: 0 4px 8px #FAB4E5;
         }
 
         .click-hint {
