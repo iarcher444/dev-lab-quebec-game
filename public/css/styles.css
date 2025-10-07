@@ -1,5 +1,5 @@
 body {
-            background-image: url("https://raw.githubusercontent.com/iarcher444/dev-lab-quebec-game/main/gamebackground.jpg");
+            background-image: url("/img/gamebackground.jpg");
             background-repeat: no-repeat;
             background-position: center center;
             background-size: cover;
