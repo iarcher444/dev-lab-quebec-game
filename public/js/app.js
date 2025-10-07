@@ -97,12 +97,12 @@ async function loadGames() {
             </div>
 
             <div class="col-md-3">
-              <strong>Console:</strong>
+              <strong>Platform:</strong>
               <div
                 class="editable-field"
                 data-field="platform"
                 data-game-id="${game._id}"
-                title="Click to edit Console"
+                title="Click to edit Platform"
               >${game.platform || ''}</div>
             </div>
 
