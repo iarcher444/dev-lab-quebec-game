@@ -1,19 +1,33 @@
 {
-  "name": "game-backlog-cis486",
+  "name": "dev-lab-quebec-game",
   "version": "1.0.0",
-  "description": "Game Backlog app for CIS 486 Dev Lab QUEBEC (Express + MongoDB, dotenv).",
-  "type": "module",
-  "main": "app.mjs",
+  "description": "------------------------------------------------------------------------------------ ### From scratch, create a web-based MVC Single Page Application (SPA) ### Required technology stack: Node.js, Express.js, MongoDB, RestfulAPI  ### Source code and environments: local and remote with git & GitHub, proper security and access configurations, use of .gitignore ### Development features to include: nodemon, RESTful API, dotenv (for secrets/credentials) ### Functionality: demonstrate CRUD operations (POST, GET, PUT, DELETE), full stack round trip with persistent data ### Deployment: Render or another PaaS ### App standards: self-describing, authorship attributed, use of front-end frameworks (normalize.css, Bootstrap 5, jQuery/UI)",
+  "main": "index.js",
   "scripts": {
-    "start": "node app.mjs",
-    "dev": "nodemon app.mjs"
+    "start": "nodemon app.mjs",
+    "dev": "nodemon app.mjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iarcher444/dev-lab-quebec-game.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iarcher444/dev-lab-quebec-game/issues"
+  },
+  "homepage": "https://github.com/iarcher444/dev-lab-quebec-game#readme",
   "dependencies": {
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "mongodb": "^6.8.0"
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "mongodb": "^6.20.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

@@ -1,20 +1,21 @@
-
 import 'dotenv/config';
-import express from 'express';
+import express from 'express'
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { MongoClient, ServerApiVersion, ObjectId } from 'mongodb';
+import { MongoClient, ServerApiVersion, ObjectId} from 'mongodb';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const app = express();
+const app = express()
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(express.json()); 
 app.use(express.static(join(__dirname, 'public')));
 
-// ---- Mongo ----
-const uri = process.env.MONGO_URI;
+// const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = process.env.MONGO_URI; 
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -23,101 +24,169 @@ const client = new MongoClient(uri, {
   }
 });
 
-let db, games;
+// Keep the connection open for our CRUD operations
+let db;
 async function connectDB() {
   try {
     await client.connect();
-    db = client.db("backlog");           // database name
-    games = db.collection("games");      // collection name
-    console.log("✅ Connected to MongoDB");
-  } catch (err) {
-    console.error("❌ MongoDB connection error:", err.message);
+    db = client.db("games"); // Database name
+    console.log("Connected to MongoDB!");
+  } catch (error) {
+    console.error("Failed to connect to MongoDB:", error);
   }
 }
 connectDB();
 
-// ---- Routes ----
-app.get('/', (_req, res) => {
-  res.send('<h3>Welcome to the Game Backlog!</h3><a href="backlog">Open Game Backlog</a><br>');
-});
 
-app.get('/backlog', (_req, res) => {
-  res.sendFile(join(__dirname, 'public', 'game-CRUD.html'));
-});
 
-// ---- CRUD: /api/games ----
+app.get('/', (req, res) => {
+  res.send('<h3>Welcome to the Game Library!</h3><a href="gamelibrary">Visit Your Game Library!</a><br>')
+})
 
-// CREATE
+
+
+app.get('/gamelibrary', (req, res) => {
+ 
+  res.sendFile(join(__dirname, 'public', 'game-library.html')) 
+
+})
+
+// CRUD ENDPOINTS FOR VIDEO GAMES IN A LIBRARY
+
+// CREATE -- ADD A NEW GAME
+
 app.post('/api/games', async (req, res) => {
   try {
-    const { title, platform, status = 'Backlog', notes = '' } = req.body;
+    //console.log(req.body);
+    const { title, platform , status = 'Backlog', notes = '' } = req.body;
+    console.log (title); 
+    
+    // Simple validation
     if (!title || !platform) {
       return res.status(400).json({ error: 'Title and Platform are required' });
     }
-    const doc = { title, platform, status, notes };
-    const result = await games.insertOne(doc);
-    res.status(201).json({ message: 'Game created', gameId: result.insertedId, game: { ...doc, _id: result.insertedId } });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to create: ' + err.message });
+
+    const game = { title, platform, status, notes };
+    const result = await db.collection('games').insertOne(game);
+    
+    res.status(201).json({ 
+      message: 'Game created successfully',
+      gameId: result.insertedId,
+      game: { ...game, _id: result.insertedId }
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create game: ' + error.message });
   }
+
 });
 
-// READ all
-app.get('/api/games', async (_req, res) => {
+// READ - Get all games
+
+app.get('/api/games', async (req, res) => {
   try {
-    const list = await games.find().sort({ _id: -1 }).toArray();
-    res.json(list);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch: ' + err.message });
+    const games = await db.collection('games').find({}).toArray();
+    res.json(games);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch games: ' + error.message});
   }
 });
 
-// READ one
-app.get('/api/games/:id', async (req, res) => {
-  try {
-    const _id = new ObjectId(req.params.id);
-    const game = await games.findOne({ _id });
-    if (!game) return res.status(404).json({ error: 'Not found' });
-    res.json(game);
-  } catch (err) {
-    res.status(400).json({ error: 'Invalid id: ' + err.message });
-  }
-});
+// UPDATE - Update a game by ID
 
-// UPDATE
 app.put('/api/games/:id', async (req, res) => {
   try {
-    const _id = new ObjectId(req.params.id);
-    const { title, platform, status, notes } = req.body;
-    const update = {
-      ...(title !== undefined && { title }),
-      ...(platform !== undefined && { platform }),
-      ...(status !== undefined && { status }),
-      ...(notes !== undefined && { notes }),
-    };
-    const result = await games.findOneAndUpdate({ _id }, { $set: update }, { returnDocument: 'after' });
-    if (!result.value) return res.status(404).json({ error: 'Not found' });
-    res.json(result.value);
-  } catch (err) {
-    res.status(400).json({ error: 'Update failed: ' + err.message });
-  }
-});
+    const {id} = req.params;
+    const {title, platform, status, notes} = req.body;
 
-// DELETE
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid game ID' });
+    }
+
+    const updateData = {};
+    if (title) updateData.title = title;
+    if (platform) updateData.platform = platform;
+    if (status) updateData.status = status;
+    if (notes !== undefined) updateData.notes = notes;
+
+    console.log(updateData);
+
+    const result = await db.collection('games').updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updateData }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'Game not found'});
+    }
+    res.json({
+      message: 'Game updated successfully',
+      modifiedCount: result.modifiedCount
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update game: ' + error.message});
+  }
+      });
+      
+// DELETE - Delete a game by ID
 app.delete('/api/games/:id', async (req, res) => {
   try {
-    const _id = new ObjectId(req.params.id);
-    const result = await games.deleteOne({ _id });
-    if (result.deletedCount === 0) return res.status(404).json({ error: 'Not found' });
-    res.json({ ok: true });
-  } catch (err) {
-    res.status(400).json({ error: 'Delete failed: ' + err.message });
+    const {id} = req.params;
+
+    if(!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid game ID' });
+    }
+    const result = await db.collection('games').deleteOne({_id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'Game not found' });
+    }
+    res.json ({
+      message: 'Game deleted successfully',
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete game: ' + error.message });
   }
 });
 
-// Health check
-app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
+// SEED - Add sample games
+app.post('/api/seed', async (req, res) => {
+  try {
+    // clear existing data
+    await db.collection('games').deleteMany({});
+
+    const sampleGames = [
+      { title: "Elden Ring", platform: "PS5", status: "Backlog", notes: "Start a strength build" },
+      { title: "The Legend of Zelda: TOTK", platform: "Switch", status: "Playing", notes: "Finish the Depths" },
+      { title: "Hades", platform: "PC", status: "Completed", notes: "20 heat clear next" },
+      { title: "Starfield", platform: "Xbox", status: "Abandoned", notes: "Might revisit later" },
+      { title: "Stardew Valley", platform: "PC", status: "Playing", notes: "Year 2 spring" }
+    ];
+    const result = await db.collection('games').insertMany(sampleGames);
+
+    res.json({
+      message: `Database seeded successfully! Added ${result.insertedCount} sample games.`,
+      insertedCount: result.insertedCount
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to seed database: ' + error.message });
+  }
+});
+
+// CLEANUP - Remove ALL game data
+app.delete('/api/cleanup', async (req, res) => {
+  try {
+    const result = await db.collection('games').deleteMany({});
+
+    res.json({
+      message: `Database cleaned successfully! Removed ${result.deletedCount} games.`,
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to cleanup database: ' + error.message });
+  }
+});
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server listening on http://localhost:${PORT}`);
 });
+

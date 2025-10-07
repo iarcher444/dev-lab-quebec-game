@@ -1,0 +1,57 @@
+body {
+            background-image: url("https://images.template.net/376676/Abstract-Gaming-Background-edit-online-1.jpg");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+            background-attachment: fixed;
+            background-blend-mode: multiply;
+            color: white;
+        }
+
+        .bg-primary {
+            background-color: #375264 !important;
+        }
+
+        .editable-field {
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            display: inline-block;
+            min-width: 100px;
+            border: 1px solid transparent;
+        }
+
+        .editable-field:hover {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+        }
+
+        .editing {
+            background-color: #fff3cd !important;
+            border-color: #ffc107 !important;
+        }
+
+        .song-card {
+            transition: all 0.2s;
+        }
+
+        .song-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .click-hint {
+            font-size: 0.8em;
+            color: #b4b4b4;
+            font-style: italic;
+        }
+
+        .save-indicator {
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .save-indicator.show {
+            opacity: 1;
+        }
