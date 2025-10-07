@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
 
 app.get('/gamelibrary', (req, res) => {
  
-  res.sendFile(join(__dirname, 'public', 'game-library.html')) 
+  res.sendFile(join(__dirname, 'public', 'game.html')) 
 
 })
 
