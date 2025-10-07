@@ -61,7 +61,6 @@ app.post('/api/games', async (req, res) => {
     const { title, platform , status = 'Backlog', notes = '' } = req.body;
     console.log (title); 
     
-    // Simple validation
     if (!title || !platform) {
       return res.status(400).json({ error: 'Title and Platform are required' });
     }
