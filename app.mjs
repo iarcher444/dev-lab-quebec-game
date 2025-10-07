@@ -60,7 +60,6 @@ app.post('/api/games', async (req, res) => {
     //console.log(req.body);
     const { title, platform , status = 'Backlog', notes = '' } = req.body;
     console.log (title); 
-    
     if (!title || !platform) {
       return res.status(400).json({ error: 'Title and Platform are required' });
     }
