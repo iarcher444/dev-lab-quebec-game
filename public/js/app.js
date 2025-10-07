@@ -27,7 +27,7 @@ function showSaveIndicator(element, success = true) {
   }, 2000);
 }
 
-/* CREATE — Add a new game */
+/* ========== CREATE — Add a new game ========== */
 document.getElementById('addGameForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -63,7 +63,7 @@ document.getElementById('addGameForm').addEventListener('submit', async (e) => {
   }
 });
 
-/* READ — Load all games*/
+/* ========== READ — Load all games ========== */
 async function loadGames() {
   try {
     const response = await fetch('/api/games');
@@ -125,7 +125,15 @@ async function loadGames() {
 
             <div class="col-12">
               <small class="text-muted">
-                <i class="bi bi-tag"></i> ID: ${game._id}
+                <i class="bi bi-tag"></i> ID:
+                <a href="#"
+                   class="game-id"
+                   data-id="${game._id}"
+                   data-title="${(game.title || '').replace(/"/g, '&quot;')}"
+                   data-platform="${(game.platform || '').replace(/"/g, '&quot;')}"
+                   data-status="${(game.status || '').replace(/"/g, '&quot;')}">
+                  ${game._id}
+                </a>
               </small>
             </div>
           </div>
@@ -134,13 +142,14 @@ async function loadGames() {
     `).join('');
 
     addInlineEditListeners();
+    wireGameIdClicks();  // enable click-to-fill update form
     showMessage(`Loaded ${games.length} game(s). Click any field to edit!`, 'info');
   } catch (error) {
     showMessage(`Error loading games: ${error.message}`, 'danger');
   }
 }
 
-/* Inline editing */
+/* ========== Inline editing inside list ========== */
 function addInlineEditListeners() {
   document.querySelectorAll('.editable-field').forEach(field => {
     field.addEventListener('click', function () {
@@ -205,7 +214,7 @@ function addInlineEditListeners() {
   });
 }
 
-/* UPDATE — single field*/
+/* ========== UPDATE — single field from list ========== */
 async function updateGameField(gameId, field, value) {
   try {
     const updateData = { [field]: value };
@@ -230,7 +239,7 @@ async function updateGameField(gameId, field, value) {
   }
 }
 
-/* DELETE — remove a game*/
+/* ========== DELETE — remove a game ========== */
 async function deleteGame(id, title) {
   if (!confirm(`Delete "${title}"?`)) return;
 
@@ -256,7 +265,7 @@ async function deleteGame(id, title) {
   }
 }
 
-/*Seed & Cleanup*/
+/* ========== Seed & Cleanup ========== */
 async function seedDatabase() {
   if (!confirm('This will add sample games to the database. Continue?')) return;
 
@@ -295,5 +304,86 @@ async function cleanupDatabase() {
   }
 }
 
-/* Boot */
+/* ========== NEW: Click-ID → auto-fill Update form ========== */
+function wireGameIdClicks() {
+  document.querySelectorAll('.game-id').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const { id, title, platform, status } = a.dataset;
+
+      // Fill the Update form inputs (these must exist in game.html)
+      const idEl = document.getElementById('updateGameId');
+      const titleEl = document.getElementById('updateTitle');
+      const platformEl = document.getElementById('updatePlatform');
+      const statusEl = document.getElementById('updateStatus');
+
+      if (!idEl || !titleEl || !platformEl || !statusEl) {
+        showMessage('Update form not found on this page.', 'warning');
+        return;
+      }
+
+      idEl.value = id || '';
+      titleEl.value = title || '';
+      platformEl.value = platform || '';
+      if (status) statusEl.value = status;
+
+      showMessage('Loaded game into Update form. Edit and click "Update Game".', 'info');
+      document.getElementById('updateGameForm')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+}
+
+// Submit handler for the Update form (PUT /api/games/:id)
+document.getElementById('updateGameForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const id = document.getElementById('updateGameId').value.trim();
+  if (!id) {
+    showMessage('Click a Game ID in the list to load it into the form.', 'warning');
+    return;
+  }
+
+  const title = document.getElementById('updateTitle').value.trim();
+  const platform = document.getElementById('updatePlatform').value.trim();
+  const status = document.getElementById('updateStatus').value;
+
+  const updateData = {};
+  if (title) updateData.title = title;
+  if (platform) updateData.platform = platform;
+  if (status) updateData.status = status;
+
+  if (Object.keys(updateData).length === 0) {
+    showMessage('No changes to update.', 'info');
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/games/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updateData)
+    });
+    const result = await res.json();
+
+    if (res.ok) {
+      showMessage('Game updated successfully!', 'success');
+      await loadGames();
+    } else {
+      showMessage(`Error: ${result.error || 'Update failed.'}`, 'danger');
+    }
+  } catch (err) {
+    showMessage(`Network error: ${err.message}`, 'danger');
+  }
+});
+
+// Optional: clear button for the Update form
+document.getElementById('clearUpdateForm')?.addEventListener('click', () => {
+  document.getElementById('updateGameForm')?.reset();
+  const idEl = document.getElementById('updateGameId');
+  if (idEl) idEl.value = '';
+});
+
+/* ========== Boot ========== */
 window.addEventListener('load', loadGames);
+
