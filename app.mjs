@@ -13,9 +13,9 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json()); 
 app.use(express.static(join(__dirname, 'public')));
 
-// const { MongoClient, ServerApiVersion } = require('mongodb');
+
 const uri = process.env.MONGO_URI; 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -24,7 +24,7 @@ const client = new MongoClient(uri, {
   }
 });
 
-// Keep the connection open for our CRUD operations
+// Keep the connection open for CRUD operations
 let db;
 async function connectDB() {
   try {
@@ -51,13 +51,12 @@ app.get('/gamelibrary', (req, res) => {
 
 })
 
-// CRUD ENDPOINTS FOR VIDEO GAMES IN A LIBRARY
+// CRUD FOR VIDEO GAMES IN A LIBRARY
 
 // CREATE -- ADD A NEW GAME
 
 app.post('/api/games', async (req, res) => {
   try {
-    //console.log(req.body);
     const { title, platform , status = 'Backlog', notes = '' } = req.body;
     console.log (title); 
     if (!title || !platform) {

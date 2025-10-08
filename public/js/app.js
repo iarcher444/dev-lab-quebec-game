@@ -142,7 +142,7 @@ async function loadGames() {
     `).join('');
 
     addInlineEditListeners();
-    wireGameIdClicks();  // enable click-to-fill update form
+    wireGameIdClicks();
     showMessage(`Loaded ${games.length} game(s). Click any field to edit!`, 'info');
   } catch (error) {
     showMessage(`Error loading games: ${error.message}`, 'danger');
@@ -153,10 +153,10 @@ async function loadGames() {
 function addInlineEditListeners() {
   document.querySelectorAll('.editable-field').forEach(field => {
     field.addEventListener('click', function () {
-      if (this.querySelector('input')) return; // already editing
+      if (this.querySelector('input')) return;
 
       const currentValue = this.textContent.trim();
-      const fieldName = this.getAttribute('data-field'); // 'title' | 'platform' | 'status'
+      const fieldName = this.getAttribute('data-field'); 
       const gameId = this.getAttribute('data-game-id');
 
       // Input element
@@ -250,7 +250,7 @@ async function deleteGame(id, title) {
     if (response.ok) {
       showMessage(`Game "${title}" deleted.`, 'success');
 
-      // Smooth removal
+      
       const card = document.querySelector(`[data-game-id="${id}"]`);
       if (card) {
         card.style.opacity = '0';
@@ -304,7 +304,7 @@ async function cleanupDatabase() {
   }
 }
 
-/* ========== NEW: Click-ID → auto-fill Update form ========== */
+/* ========== Update form ========== */
 function wireGameIdClicks() {
   document.querySelectorAll('.game-id').forEach(a => {
     a.addEventListener('click', (e) => {
@@ -334,7 +334,7 @@ function wireGameIdClicks() {
   });
 }
 
-// Submit handler for the Update form (PUT /api/games/:id)
+
 document.getElementById('updateGameForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -377,7 +377,7 @@ document.getElementById('updateGameForm')?.addEventListener('submit', async (e) 
   }
 });
 
-// Optional: clear button for the Update form
+//clear button for the Update form
 document.getElementById('clearUpdateForm')?.addEventListener('click', () => {
   document.getElementById('updateGameForm')?.reset();
   const idEl = document.getElementById('updateGameId');
