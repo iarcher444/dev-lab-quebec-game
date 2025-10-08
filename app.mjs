@@ -40,7 +40,7 @@ connectDB();
 
 
 app.get('/', (req, res) => {
-  res.send('<h3>Welcome to the Game Library!</h3><a href="gamelibrary">Visit Your Game Library!</a><br>')
+  res.send('<h3>Welcome to my Game Library!</h3><a href="gamelibrary">Click Here to Visit The Game Library!</a><br>')
 })
 
 
